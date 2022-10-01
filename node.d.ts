@@ -2684,6 +2684,7 @@ declare namespace $ {
         event(): {
             paste: (event?: any) => any;
         };
+        title_default(): string;
         title(val?: any): string;
         Title_edit(): $$.$mol_string;
         snapshot_hint(): string;
@@ -2870,6 +2871,8 @@ declare namespace $.$$ {
 
 declare namespace $ {
     class $hyoo_sporno extends $hyoo_calc {
+        Source(): $mol_link_source;
+        title_default(): string;
     }
 }
 
