@@ -1,1 +1,4 @@
 $hyoo_sporno $hyoo_calc
+	Source $mol_link_source
+		uri \https://github.com/hyoo-ru/sporno.site
+	title_default @ \Facts Investigation
