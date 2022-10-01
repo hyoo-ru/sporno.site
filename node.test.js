@@ -10038,6 +10038,38 @@ var $;
         title_default() {
             return this.$.$mol_locale.text('$hyoo_sporno_title_default');
         }
+        formulas_template() {
+            return {
+                A1: this.template_date(),
+                B1: this.template_fact(),
+                C1: this.template_source(),
+                D1: this.template_common(),
+                E1: this.template_spec1(),
+                F1: this.template_spec2(),
+                G1: "~~...~~"
+            };
+        }
+        hint() {
+            return this.$.$mol_locale.text('$hyoo_sporno_hint');
+        }
+        template_date() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_date');
+        }
+        template_fact() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_fact');
+        }
+        template_source() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_source');
+        }
+        template_common() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_common');
+        }
+        template_spec1() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_spec1');
+        }
+        template_spec2() {
+            return this.$.$mol_locale.text('$hyoo_sporno_template_spec2');
+        }
     }
     __decorate([
         $mol_mem
@@ -10045,6 +10077,29 @@ var $;
     $.$hyoo_sporno = $hyoo_sporno;
 })($ || ($ = {}));
 //hyoo/sporno/-view.tree/sporno.view.tree.ts
+;
+"use strict";
+var $;
+(function ($) {
+    var $$;
+    (function ($$) {
+        class $hyoo_sporno extends $.$hyoo_sporno {
+            formulas_default() {
+                if (Object.keys(this.$.$mol_state_arg.dict()).length) {
+                    return super.formulas_default();
+                }
+                else {
+                    return this.formulas_template();
+                }
+            }
+        }
+        __decorate([
+            $mol_mem
+        ], $hyoo_sporno.prototype, "formulas_default", null);
+        $$.$hyoo_sporno = $hyoo_sporno;
+    })($$ = $.$$ || ($.$$ = {}));
+})($ || ($ = {}));
+//hyoo/sporno/sporno.view.ts
 ;
 "use strict";
 var $;

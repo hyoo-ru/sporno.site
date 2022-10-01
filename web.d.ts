@@ -2791,6 +2791,28 @@ declare namespace $ {
     class $hyoo_sporno extends $hyoo_calc {
         Source(): $mol_link_source;
         title_default(): string;
+        formulas_template(): {
+            A1: string;
+            B1: string;
+            C1: string;
+            D1: string;
+            E1: string;
+            F1: string;
+            G1: string;
+        };
+        hint(): string;
+        template_date(): string;
+        template_fact(): string;
+        template_source(): string;
+        template_common(): string;
+        template_spec1(): string;
+        template_spec2(): string;
+    }
+}
+
+declare namespace $.$$ {
+    class $hyoo_sporno extends $.$hyoo_sporno {
+        formulas_default(): {};
     }
 }
 
