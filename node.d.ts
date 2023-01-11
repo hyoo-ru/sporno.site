@@ -3627,6 +3627,7 @@ declare namespace $ {
             G1: string;
         };
         hint(): string;
+        hint_showed(next?: any): boolean;
         template_date(): string;
         template_fact(): string;
         template_source(): string;

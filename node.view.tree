@@ -745,4 +745,5 @@ $hyoo_sporno $hyoo_calc
 		E1 <= template_spec1 @ \~~Speculation **<foo>**~~
 		F1 <= template_spec2 @ \~~Speculation **<bar>**~~
 		G1 \~~...~~
-	hint @ \✅ Plausibly, ⭕ Improbably, ❌ Disproved, [Discuss](https://t.me/+iIBmIcOH49ZkYTcy)
+	hint @ \✅ Plausibly | ⭕ Improbably | ❌ Disproved | [Discuss](https://t.me/+iIBmIcOH49ZkYTcy)
+	hint_showed? true

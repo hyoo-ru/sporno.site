@@ -12355,6 +12355,11 @@ var $;
         hint() {
             return this.$.$mol_locale.text('$hyoo_sporno_hint');
         }
+        hint_showed(next) {
+            if (next !== undefined)
+                return next;
+            return true;
+        }
         template_date() {
             return this.$.$mol_locale.text('$hyoo_sporno_template_date');
         }
@@ -12377,6 +12382,9 @@ var $;
     __decorate([
         $mol_mem
     ], $hyoo_sporno.prototype, "Source", null);
+    __decorate([
+        $mol_mem
+    ], $hyoo_sporno.prototype, "hint_showed", null);
     $.$hyoo_sporno = $hyoo_sporno;
 })($ || ($ = {}));
 //hyoo/sporno/-view.tree/sporno.view.tree.ts
