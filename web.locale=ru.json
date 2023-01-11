@@ -8,7 +8,7 @@
 	"$hyoo_calc_Row_ins_hint": "Вставить строку",
 	"$hyoo_calc_hint": "`$.A1` - результат из A1, `$$.A1` - формула из A1, `a=` - задать переменную, `_.a` - значение переменной, `__.a` - ячейка объявления переменной, `A1:C3` - диапазон ячеек, используйте [**JavaScript**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference) для остального.\n**Доступные функции**: {funcs}.\nИспользуйте Alt + Стрелки для переключения между ячейками.",
 	"$hyoo_calc_title_default": "Электронная таблица",
-	"$hyoo_sporno_hint": "✅ Правдоподобно, ⭕ Невероятно, ❌ Опровергнуто",
+	"$hyoo_sporno_hint": "✅ Правдоподобно, ⭕ Невероятно, ❌ Опровергнуто, [Обсудить](https://t.me/+iIBmIcOH49ZkYTcy)",
 	"$hyoo_sporno_template_common": "~~Общие выводы~~",
 	"$hyoo_sporno_template_date": "~~Дата~~",
 	"$hyoo_sporno_template_fact": "~~Факт~~",
