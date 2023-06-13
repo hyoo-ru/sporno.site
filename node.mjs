@@ -13669,4 +13669,5 @@ var $;
 })($ || ($ = {}));
 //hyoo/sporno/sporno.view.ts
 
+export default $
 //# sourceMappingURL=node.js.map

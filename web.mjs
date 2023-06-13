@@ -13160,4 +13160,5 @@ var $;
 })($ || ($ = {}));
 //hyoo/sporno/sporno.view.ts
 
+export default $
 //# sourceMappingURL=web.js.map
