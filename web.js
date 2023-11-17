@@ -882,11 +882,15 @@ var $;
 (function ($) {
     $.$mol_key_store = new WeakMap();
     function $mol_key(value) {
+        if (typeof value === 'bigint')
+            return value.toString() + 'n';
         if (!value)
             return JSON.stringify(value);
         if (typeof value !== 'object' && typeof value !== 'function')
             return JSON.stringify(value);
         return JSON.stringify(value, (field, value) => {
+            if (typeof value === 'bigint')
+                return value.toString() + 'n';
             if (!value)
                 return value;
             if (typeof value !== 'object' && typeof value !== 'function')
@@ -3948,15 +3952,77 @@ var $;
 "use strict";
 var $;
 (function ($) {
+    function $mol_log3_area_lazy(event) {
+        const self = this;
+        const stack = self.$mol_log3_stack;
+        const deep = stack.length;
+        let logged = false;
+        stack.push(() => {
+            logged = true;
+            self.$mol_log3_area.call(self, event);
+        });
+        return () => {
+            if (logged)
+                self.console.groupEnd();
+            if (stack.length > deep)
+                stack.length = deep;
+        };
+    }
+    $.$mol_log3_area_lazy = $mol_log3_area_lazy;
+    $.$mol_log3_stack = [];
+})($ || ($ = {}));
+//mol/log3/log3.ts
+;
+"use strict";
+var $;
+(function ($) {
+    function $mol_log3_web_make(level, color) {
+        return function $mol_log3_logger(event) {
+            const pending = this.$mol_log3_stack.pop();
+            if (pending)
+                pending();
+            let tpl = '%c';
+            const chunks = Object.values(event);
+            for (let i = 0; i < chunks.length; ++i) {
+                tpl += (typeof chunks[i] === 'string') ? ' ⦙ %s' : ' ⦙ %o';
+            }
+            const style = `color:${color};font-weight:bolder`;
+            this.console[level](tpl, style, ...chunks);
+            const self = this;
+            return () => self.console.groupEnd();
+        };
+    }
+    $.$mol_log3_web_make = $mol_log3_web_make;
+    $.$mol_log3_come = $mol_log3_web_make('info', 'royalblue');
+    $.$mol_log3_done = $mol_log3_web_make('info', 'forestgreen');
+    $.$mol_log3_fail = $mol_log3_web_make('error', 'orangered');
+    $.$mol_log3_warn = $mol_log3_web_make('warn', 'goldenrod');
+    $.$mol_log3_rise = $mol_log3_web_make('log', 'magenta');
+    $.$mol_log3_area = $mol_log3_web_make('group', 'cyan');
+})($ || ($ = {}));
+//mol/log3/log3.web.ts
+;
+"use strict";
+var $;
+(function ($) {
     class $mol_storage extends $mol_object2 {
         static native() {
             return this.$.$mol_dom_context.navigator.storage;
         }
-        static persisted(next) {
+        static persisted(next, cache) {
             $mol_mem_persist();
+            if (cache)
+                return Boolean(next);
             const native = this.native();
-            if (next)
-                native.persist();
+            if (next && !$mol_mem_cached(() => this.persisted())) {
+                native.persist().then(actual => {
+                    setTimeout(() => this.persisted(actual, 'cache'), 5000);
+                    if (actual)
+                        this.$.$mol_log3_rise({ place: this, message: `Persist` });
+                    else
+                        this.$.$mol_log3_fail({ place: this, message: `Non persist` });
+                });
+            }
             return next ?? $mol_wire_sync(native).persisted();
         }
         static estimate() {
@@ -5083,59 +5149,6 @@ var $;
     $.$mol_wire_race = $mol_wire_race;
 })($ || ($ = {}));
 //mol/wire/race/race.ts
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_log3_area_lazy(event) {
-        const self = this;
-        const stack = self.$mol_log3_stack;
-        const deep = stack.length;
-        let logged = false;
-        stack.push(() => {
-            logged = true;
-            self.$mol_log3_area.call(self, event);
-        });
-        return () => {
-            if (logged)
-                self.console.groupEnd();
-            if (stack.length > deep)
-                stack.length = deep;
-        };
-    }
-    $.$mol_log3_area_lazy = $mol_log3_area_lazy;
-    $.$mol_log3_stack = [];
-})($ || ($ = {}));
-//mol/log3/log3.ts
-;
-"use strict";
-var $;
-(function ($) {
-    function $mol_log3_web_make(level, color) {
-        return function $mol_log3_logger(event) {
-            const pending = this.$mol_log3_stack.pop();
-            if (pending)
-                pending();
-            let tpl = '%c';
-            const chunks = Object.values(event);
-            for (let i = 0; i < chunks.length; ++i) {
-                tpl += (typeof chunks[i] === 'string') ? ' ⦙ %s' : ' ⦙ %o';
-            }
-            const style = `color:${color};font-weight:bolder`;
-            this.console[level](tpl, style, ...chunks);
-            const self = this;
-            return () => self.console.groupEnd();
-        };
-    }
-    $.$mol_log3_web_make = $mol_log3_web_make;
-    $.$mol_log3_come = $mol_log3_web_make('info', 'royalblue');
-    $.$mol_log3_done = $mol_log3_web_make('info', 'forestgreen');
-    $.$mol_log3_fail = $mol_log3_web_make('error', 'orangered');
-    $.$mol_log3_warn = $mol_log3_web_make('warn', 'goldenrod');
-    $.$mol_log3_rise = $mol_log3_web_make('log', 'magenta');
-    $.$mol_log3_area = $mol_log3_web_make('group', 'cyan');
-})($ || ($ = {}));
-//mol/log3/log3.web.ts
 ;
 "use strict";
 var $;
@@ -9169,7 +9182,7 @@ var $;
 "use strict";
 var $;
 (function ($) {
-    $mol_style_attach("mol/check/check.css", "[mol_check] {\n\tflex: 0 0 auto;\n\tjustify-content: flex-start;\n\talign-content: center;\n\talign-items: flex-start;\n\tborder: none;\n\tfont-weight: inherit;\n\tbox-shadow: none;\n\ttext-align: left;\n\tdisplay: inline-flex;\n\tflex-wrap: nowrap;\n}\n\n[mol_check_title] {\n\tflex-shrink: 1;\n}\n");
+    $mol_style_attach("mol/check/check.css", "[mol_check] {\n\tflex: 0 0 auto;\n\tjustify-content: flex-start;\n\talign-content: center;\n\t/* align-items: flex-start; */\n\tborder: none;\n\tfont-weight: inherit;\n\tbox-shadow: none;\n\ttext-align: left;\n\tdisplay: inline-flex;\n\tflex-wrap: nowrap;\n}\n\n[mol_check_title] {\n\tflex-shrink: 1;\n}\n");
 })($ || ($ = {}));
 //mol/check/-css/check.css.ts
 ;
@@ -14138,7 +14151,7 @@ var $;
 "use strict";
 var $;
 (function ($) {
-    $mol_style_attach("hyoo/calc/calc.view.css", "[hyoo_calc_title_edit]:enabled {\n\twidth: auto;\n\tflex: 1000 1 auto;\n}\n\n[hyoo_calc_tools] {\n\tflex-grow: 0;\n}\n\n[hyoo_calc_current] {\n\tflex: none;\n}\n\n[hyoo_calc_pos] {\n\tflex: none;\n\twidth: 2.5rem;\n\tfont-family: monospace;\n\talign-items: flex-start;\n}\n\n[hyoo_calc_edit] {\n\tflex-shrink: 1;\n}\n\n[hyoo_calc_hint] {\n\tmax-width: none;\n\tpadding: 0;\n}\n\n[hyoo_calc_hint_trigger] {\n\talign-items: center;\n}\n\n[hyoo_calc_body] {\n\tscroll-padding: 2.5rem;\n\tpadding: 0;\n}\n\n[hyoo_calc_cells][hyoo_calc_cells] {\n\tflex-shrink: 0;\n\talign-self: flex-start;\n}\n\n[hyoo_calc_col_head] ,\n[hyoo_calc_row_head] {\n\tfont-family: monospace;\n\tbackground: var(--mol_theme_back);\n\tcolor: var(--mol_theme_shade);\n\tuser-select: none;\n\tfont-weight: inherit;\n}\n\n[hyoo_calc_col_head]:has( [hyoo_calc_col_tools] ) {\n\tz-index: 5;\n}\n\n[hyoo_calc_col_head] {\n\ttext-align: left;\n\tpadding: 0;\n\twhite-space: nowrap;\n\tmin-width: 5rem;\n}\n\n[hyoo_calc_col_title] {\n\tpadding: var(--mol_gap_text);\n\tdisplay: inline-flex;\n\tvertical-align: top;\n}\n\n[hyoo_calc_col_tools] {\n\tdisplay: inline-flex;\n\tposition: absolute;\n\tbackground: var(--mol_theme_back);\n\tz-index: 1;\n\tleft: 0;\n\tbox-shadow: 0 0 0.5rem hsl(0deg 0% 0% / 25%);\n}\n\n[hyoo_calc_col_tools] > [mol_button_minor] {\n\tbackground: var(--mol_theme_card);\n\tjustify-content: center;\n}\n\n[hyoo_calc_col_ins_icon] {\n    position: absolute;\n\tbottom: -0.25rem;\n}\n\n[hyoo_calc_cells_row]:has( [hyoo_calc_cell_selected=\"true\"] ) > [hyoo_calc_row_head] {\n\tz-index: 5;\n}\n\n[hyoo_calc_row_head] {\n\tvertical-align: top;\n\tpadding: 0;\n\twhite-space: nowrap;\n}\n\n[hyoo_calc_row_title] {\n\tpadding: var(--mol_gap_text);\n\tdisplay: inline-flex;\n\tvertical-align: top;\n}\n\n[hyoo_calc_row_tools] {\n\tposition: absolute;\n\tbackground: var(--mol_theme_back);\n\tflex-direction: column;\n\tz-index: 1;\n\ttop: 0;\n\tleft: 1px;\n\tbox-shadow: 0 0 0.5rem hsl(0deg 0% 0% / 25%);\n}\n\n[hyoo_calc_row_tools] > [mol_button_minor] {\n\tbackground: var(--mol_theme_card);\n}\n\n[hyoo_calc_row_ins_icon] {\n    position: absolute;\n    right: 0px;\n}\n\n[hyoo_calc_cell] {\n\tuser-select: text;\n\tborder-radius: 0;\n\tdisplay: table-cell;\n\twhite-space: normal;\n\tword-break: normal;\n\tvertical-align: top;\n\tpadding: 0;\n}\n\n[hyoo_calc_cell_rows] {\n\tpadding: 0;\n}\n\n[hyoo_calc_cell_selected] {\n\tbox-shadow: 0 0 0 1px var(--mol_theme_current);\n\tz-index: 5;\n\tposition: relative;\n\tborder-radius: var(--mol_gap_round);\n}\n\n[hyoo_calc_cell_type=\"number\"] {\n\ttext-align: right;\n}\n");
+    $mol_style_attach("hyoo/calc/calc.view.css", "[hyoo_calc_title_edit]:enabled {\n\twidth: auto;\n\tflex: 1000 1 auto;\n}\n\n[hyoo_calc_tools] {\n\tflex-grow: 0;\n}\n\n[hyoo_calc_current] {\n\tflex: none;\n}\n\n[hyoo_calc_pos] {\n\tflex: none;\n\twidth: 2.5rem;\n\tfont-family: monospace;\n\talign-items: flex-start;\n}\n\n[hyoo_calc_edit] {\n\tflex-shrink: 1;\n}\n\n[hyoo_calc_hint] {\n\tmax-width: none;\n\tpadding: 0;\n}\n\n[hyoo_calc_hint_trigger] {\n\talign-items: center;\n}\n\n[hyoo_calc_body] {\n\tscroll-padding: 2.5rem;\n}\n\n[hyoo_calc_body_content] {\n\tpadding: 0;\n}\n\n[hyoo_calc_cells][hyoo_calc_cells] {\n\tflex-shrink: 0;\n\talign-self: flex-start;\n}\n\n[hyoo_calc_col_head] ,\n[hyoo_calc_row_head] {\n\tfont-family: monospace;\n\tbackground: var(--mol_theme_back);\n\tcolor: var(--mol_theme_shade);\n\tuser-select: none;\n\tfont-weight: inherit;\n}\n\n[hyoo_calc_col_head]:has( [hyoo_calc_col_tools] ) {\n\tz-index: 5;\n}\n\n[hyoo_calc_col_head] {\n\ttext-align: left;\n\tpadding: 0;\n\twhite-space: nowrap;\n\tmin-width: 5rem;\n}\n\n[hyoo_calc_col_title] {\n\tpadding: var(--mol_gap_text);\n\tdisplay: inline-flex;\n\tvertical-align: top;\n}\n\n[hyoo_calc_col_tools] {\n\tdisplay: inline-flex;\n\tposition: absolute;\n\tbackground: var(--mol_theme_back);\n\tz-index: 1;\n\tleft: 0;\n\tbox-shadow: 0 0 0.5rem hsl(0deg 0% 0% / 25%);\n}\n\n[hyoo_calc_col_tools] > [mol_button_minor] {\n\tbackground: var(--mol_theme_card);\n\tjustify-content: center;\n}\n\n[hyoo_calc_col_ins_icon] {\n    position: absolute;\n\tbottom: -0.25rem;\n}\n\n[hyoo_calc_cells_row]:has( [hyoo_calc_cell_selected=\"true\"] ) > [hyoo_calc_row_head] {\n\tz-index: 5;\n}\n\n[hyoo_calc_row_head] {\n\tvertical-align: top;\n\tpadding: 0;\n\twhite-space: nowrap;\n}\n\n[hyoo_calc_row_title] {\n\tpadding: var(--mol_gap_text);\n\tdisplay: inline-flex;\n\tvertical-align: top;\n}\n\n[hyoo_calc_row_tools] {\n\tposition: absolute;\n\tbackground: var(--mol_theme_back);\n\tflex-direction: column;\n\tz-index: 1;\n\ttop: 0;\n\tleft: 1px;\n\tbox-shadow: 0 0 0.5rem hsl(0deg 0% 0% / 25%);\n}\n\n[hyoo_calc_row_tools] > [mol_button_minor] {\n\tbackground: var(--mol_theme_card);\n}\n\n[hyoo_calc_row_ins_icon] {\n    position: absolute;\n    right: 0px;\n}\n\n[hyoo_calc_cell] {\n\tuser-select: text;\n\tborder-radius: 0;\n\tdisplay: table-cell;\n\twhite-space: normal;\n\tword-break: normal;\n\tvertical-align: top;\n\tpadding: 0;\n}\n\n[hyoo_calc_cell_rows] {\n\tpadding: 0;\n}\n\n[hyoo_calc_cell_selected] {\n\tbox-shadow: 0 0 0 1px var(--mol_theme_current);\n\tz-index: 5;\n\tposition: relative;\n\tborder-radius: var(--mol_gap_round);\n}\n\n[hyoo_calc_cell_type=\"number\"] {\n\ttext-align: right;\n}\n");
 })($ || ($ = {}));
 //hyoo/calc/-css/calc.view.css.ts
 ;
