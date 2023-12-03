@@ -6,7 +6,7 @@ $hyoo_sporno $hyoo_calc
 		A1 <= template_date @ \~~Date~~
 		B1 <= template_fact @ \~~Fact~~
 		C1 <= template_source @ \~~Source~~
-		D1 <= template_common @ \~~Common Сonsequences~~
+		D1 <= template_common @ \~~Common Consequences~~
 		E1 <= template_spec1 @ \~~Speculation **<foo>**~~
 		F1 <= template_spec2 @ \~~Speculation **<bar>**~~
 		G1 \~~...~~
